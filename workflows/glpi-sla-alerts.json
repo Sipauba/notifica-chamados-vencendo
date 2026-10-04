@@ -1,0 +1,526 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "let mensagemFinal = '🚨 Chamado(s) vencendo em 1 hora: 🚨\\n\\n';\n\nfor (const item of items) {\n  const numero = item.json.id;\n  const titulo = item.json.name;\n  const hora = item.json.hora_fim_prazo;\n  mensagemFinal += `Nº ${numero} (${hora}): ${titulo}\\n`;\n}\n\n// Retorne a string sem stringify\nreturn [{\n  json: {\n    resultado: mensagemFinal\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        256,
+        176
+      ],
+      "id": "b88043da-89d7-4133-87b4-5aab8c30d7e5",
+      "name": "Gera resposta JSON com chamados1"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  g.id, \n  g.name,\n  DATE_FORMAT(g.time_to_resolve, '%H:%i') AS hora_fim_prazo\nFROM \n  glpi_tickets g\nWHERE \n  g.status IN (1, 2)\n  AND g.time_to_resolve BETWEEN \n      DATE_ADD(NOW(), INTERVAL 60 MINUTE)\n      AND DATE_ADD(NOW(), INTERVAL 65 MINUTE);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        -192,
+        176
+      ],
+      "id": "62b027d2-d0bb-4291-a70b-34d247ecd293",
+      "name": "Consulta chamados vencendo",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xxxxxxxxxxxxxxxxxxxx/message/sendText/xxxxxxxxxxxxxxxxxxxx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "xxxxxxxxxxxxxxxxxxxx@g.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.resultado }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        688,
+        176
+      ],
+      "id": "058d2532-fd48-42a7-9eb4-8fc90bd81c70",
+      "name": "Envia Zap pra um grupo específico",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "WhatsApp API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "55d8af5e-571d-41fa-b5e9-7d8b6dfbf19b",
+              "name": "resultado",
+              "value": "={{ $json.resultado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        464,
+        176
+      ],
+      "id": "2c2e1c22-a0ed-4a13-b8fc-ed83fa0aff30",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 4
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -416,
+        176
+      ],
+      "id": "c65450df-630c-46ad-a0cc-61f010959920",
+      "name": "Gatilho de 4 em 4 minutos"
+    },
+    {
+      "parameters": {
+        "jsCode": "let mensagemFinal = '🚨🚨 Chamado(s) vencendo em 30 minutos: 🚨🚨\\n\\n';\n\nfor (const item of items) {\n  const numero = item.json.id;\n  const titulo = item.json.name;\n  const hora = item.json.hora_fim_prazo;\n  mensagemFinal += `Nº ${numero} (${hora}): ${titulo}\\n`;\n}\n\n// Retorne a string sem stringify\nreturn [{\n  json: {\n    resultado: mensagemFinal\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        688,
+        384
+      ],
+      "id": "e6dd444f-11c8-44f2-9f43-eb01507c04ca",
+      "name": "Gera resposta JSON com chamados"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  g.id, \n  g.name,\n  DATE_FORMAT(g.time_to_resolve, '%H:%i') AS hora_fim_prazo\nFROM \n  glpi_tickets g\nWHERE \n  g.status IN (1, 2)\n  AND g.time_to_resolve BETWEEN \n      DATE_ADD(NOW(), INTERVAL 30 MINUTE)\n      AND DATE_ADD(NOW(), INTERVAL 35 MINUTE);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        256,
+        384
+      ],
+      "id": "813c4b78-bb9b-4d87-8758-f96b9a5bf713",
+      "name": "Consulta chamados vencendo1",
+      "alwaysOutputData": true,
+      "credentials": {
+        "mySql": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xxxxxxxxxxxxxxxxxxxx/message/sendText/xxxxxxxxxxxxxxxxxxxx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "xxxxxxxxxxxxxxxxxxxx@g.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.resultado }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1136,
+        384
+      ],
+      "id": "55a0b2ed-9018-4e3a-b750-785416db3ba0",
+      "name": "Envia Zap pra um grupo específico1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "WhatsApp API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1d4c6355-0f24-4682-a4bd-8ecd6f44f554",
+              "name": "resultado",
+              "value": "={{ $json.resultado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        384
+      ],
+      "id": "a193f86d-e160-466c-ab61-37f7b409454a",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "let mensagemFinal = '🚨🚨🚨 Chamado(s) vencendo em 15 minutos: 🚨🚨🚨\\n\\n';\n\nfor (const item of items) {\n  const numero = item.json.id;\n  const titulo = item.json.name;\n  const hora = item.json.hora_fim_prazo;\n  mensagemFinal += `Nº ${numero} (${hora}): ${titulo}\\n`;\n}\n\n// Retorne a string sem stringify\nreturn [{\n  json: {\n    resultado: mensagemFinal\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        576
+      ],
+      "id": "984cd4c3-dfd6-485e-ad22-8313f687373c",
+      "name": "Gera resposta JSON com chamados2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  g.id, \n  g.name,\n  DATE_FORMAT(g.time_to_resolve, '%H:%i') AS hora_fim_prazo\nFROM \n  glpi_tickets g\nWHERE \n  g.status IN (1, 2)\n  AND g.time_to_resolve BETWEEN \n      DATE_ADD(NOW(), INTERVAL 15 MINUTE)\n      AND DATE_ADD(NOW(), INTERVAL 20 MINUTE);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.mySql",
+      "typeVersion": 2.4,
+      "position": [
+        688,
+        576
+      ],
+      "id": "f4aa56a6-c5b0-4392-a9b0-824958840744",
+      "name": "Consulta chamados vencendo2",
+      "credentials": {
+        "mySql": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "MySQL GLPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://xxxxxxxxxxxxxxxxxxxx/message/sendText/xxxxxxxxxxxxxxxxxxxx",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "xxxxxxxxxxxxxxxxxxxx@g.us"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.resultado }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        576
+      ],
+      "id": "b9daf437-7292-4601-89b1-2a8e459f9d1e",
+      "name": "Envia Zap pra um grupo específico2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "xxxxxxxxxxxxxxxxxxxx",
+          "name": "WhatsApp API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2bfdd0ea-25ea-4414-bf93-92ed7d977dd5",
+              "name": "resultado",
+              "value": "={{ $json.resultado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1136,
+        576
+      ],
+      "id": "2854e2f7-eecf-4f74-9d89-31245cd98807",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c0c1dfe5-d6a0-4ba6-b151-d6e5e6d5a9a2",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        32,
+        176
+      ],
+      "id": "35dca1fb-3432-4ac3-86f5-fb7146c1e281",
+      "name": "Verifica se tem chamados vencendo"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ab8135b9-4f06-4020-8cba-79ec39b2c75e",
+              "leftValue": "={{ $json }}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        464,
+        384
+      ],
+      "id": "e7c6ace0-ed14-4fe7-ae54-8f5ae9b854d5",
+      "name": "Verifica se tem chamados vencendo1"
+    }
+  ],
+  "connections": {
+    "Gera resposta JSON com chamados1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta chamados vencendo": {
+      "main": [
+        [
+          {
+            "node": "Verifica se tem chamados vencendo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Envia Zap pra um grupo específico",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gatilho de 4 em 4 minutos": {
+      "main": [
+        [
+          {
+            "node": "Consulta chamados vencendo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gera resposta JSON com chamados": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta chamados vencendo1": {
+      "main": [
+        [
+          {
+            "node": "Verifica se tem chamados vencendo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Envia Zap pra um grupo específico1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gera resposta JSON com chamados2": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Consulta chamados vencendo2": {
+      "main": [
+        [
+          {
+            "node": "Gera resposta JSON com chamados2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Envia Zap pra um grupo específico2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica se tem chamados vencendo": {
+      "main": [
+        [
+          {
+            "node": "Gera resposta JSON com chamados1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consulta chamados vencendo1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica se tem chamados vencendo1": {
+      "main": [
+        [
+          {
+            "node": "Gera resposta JSON com chamados",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Consulta chamados vencendo2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "xxxxxxxxxxxxxxxxxxxx"
+  }
+}
