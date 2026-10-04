@@ -36,6 +36,12 @@ A sequência implementada é **1 hora → 30 minutos → 15 minutos**. Se a cons
 
 As janelas têm cinco minutos de largura porque a verificação ocorre a cada quatro minutos. Elas são fixas no workflow atual. Consulte [Fluxo de alertas](docs/fluxo-alertas.md) para as regras exatas.
 
+## Visualização do workflow
+
+![Captura sanitizada do workflow n8n com as três faixas de alerta](assets/workflow-n8n-sanitizado.png)
+
+A captura foi editada para ocultar o endereço privado da API nos três nodes de envio. O [JSON publicável](workflows/glpi-sla-alerts.json) contém os mesmos placeholders de segurança.
+
 ## Pré-requisitos
 
 - Instância n8n compatível com os nodes do arquivo exportado.
